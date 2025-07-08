@@ -1,9 +1,12 @@
 package com.org.enotesapiservice.service.impl;
 
+import com.org.enotesapiservice.dto.CategoryDto;
+import com.org.enotesapiservice.dto.CategoryResponse;
 import com.org.enotesapiservice.entity.Category;
 import com.org.enotesapiservice.repository.CategoryRepository;
 import com.org.enotesapiservice.service.CategoryService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -15,9 +18,18 @@ import java.util.List;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final ModelMapper modelMapper;
 
     @Override
-    public Boolean saveCategory(Category category) {
+    public Boolean saveCategory(CategoryDto categoryDto) {
+
+//        Category category = new Category();
+//        category.setName(categoryDto.getName());
+//        category.setDescription(categoryDto.getDescription());
+//        category.setIsActive(categoryDto.getIsActive());
+
+        Category category = modelMapper.map(categoryDto, Category.class);
+
         category.setIsDeleted(false);
         category.setCreatedBy(1);
         category.setCreatedOn(new Date());
@@ -26,7 +38,18 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<Category> getAllCategory() {
-        return categoryRepository.findAll();
+    public List<CategoryDto> getAllCategory() {
+        List<Category> categories = categoryRepository.findAll();
+        return categories.stream().map(category -> modelMapper.map(category, CategoryDto.class)).toList();
+    }
+
+    @Override
+    public List<CategoryResponse> getActiveCategory() {
+        List<Category> categories = categoryRepository.findByIsActiveTrue();
+        return categories.stream()
+                .map(category -> modelMapper
+                        .map(category, CategoryResponse.class))
+                .toList();
+
     }
 }

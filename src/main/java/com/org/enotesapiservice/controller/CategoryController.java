@@ -1,5 +1,7 @@
-package com.org.enotesapiservice;
+package com.org.enotesapiservice.controller;
 
+import com.org.enotesapiservice.dto.CategoryDto;
+import com.org.enotesapiservice.dto.CategoryResponse;
 import com.org.enotesapiservice.entity.Category;
 import com.org.enotesapiservice.service.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +20,8 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @PostMapping("/saveCategory")
-    public ResponseEntity<?> saveCategory(@RequestBody Category category) {
-        Boolean saveCategory = categoryService.saveCategory(category);
+    public ResponseEntity<?> saveCategory(@RequestBody CategoryDto categoryDto) {
+        Boolean saveCategory = categoryService.saveCategory(categoryDto);
         if (saveCategory) {
             return new ResponseEntity<>("Saved Success", HttpStatus.CREATED);
         } else {
@@ -29,7 +31,7 @@ public class CategoryController {
 
     @GetMapping("/category")
     public ResponseEntity<?> getAllCategory() {
-        List<Category> allCategory = categoryService.getAllCategory();
+        List<CategoryDto> allCategory = categoryService.getAllCategory();
         if (CollectionUtils.isEmpty(allCategory)) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             //return ResponseEntity.noContent().build();   //2 way
@@ -37,5 +39,20 @@ public class CategoryController {
             return new ResponseEntity<>(allCategory, HttpStatus.OK);
         }
     }
+
+    @GetMapping("/active-category")
+    public ResponseEntity<?> getActiveCategory() {
+        List<CategoryResponse> allCategory = categoryService.getActiveCategory();
+        if (CollectionUtils.isEmpty(allCategory)) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            //return ResponseEntity.noContent().build();   //2 way
+        } else {
+            return new ResponseEntity<>(allCategory, HttpStatus.OK);
+        }
+    }
+
+
+
+
 
 }
