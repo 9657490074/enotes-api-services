@@ -3,6 +3,7 @@ package com.org.enotesapiservice.service.impl;
 import com.org.enotesapiservice.dto.CategoryDto;
 import com.org.enotesapiservice.dto.CategoryResponse;
 import com.org.enotesapiservice.entity.Category;
+import com.org.enotesapiservice.exception.ResourceNotFoundException;
 import com.org.enotesapiservice.repository.CategoryRepository;
 import com.org.enotesapiservice.service.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -69,8 +70,9 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDto getCategoryById(Integer id) {
-        Optional<Category> findByCategoryId = categoryRepository.findByIdAndIsDeletedFalse(id);
-        return findByCategoryId.map(category -> modelMapper.map(category, CategoryDto.class)).orElse(null);
+        Category findByCategoryId = categoryRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with id:" + id));
+        return ObjectUtils.isEmpty(findByCategoryId) ? null : modelMapper.map(findByCategoryId, CategoryDto.class);
     }
 
     @Override
