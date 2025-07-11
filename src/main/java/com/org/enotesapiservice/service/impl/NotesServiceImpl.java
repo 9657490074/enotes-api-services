@@ -15,10 +15,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -65,7 +65,7 @@ public class NotesServiceImpl implements NotesService {
         String originalFilename = file.getOriginalFilename();
         String extension = FilenameUtils.getExtension(originalFilename);
 
-        List<String> extensionAllow = List.of("pdf", "png", "jpg", "xlsx");
+        List<String> extensionAllow = List.of("pdf", "png", "jpg", "xlsx", "docx");
 
         if (!extensionAllow.contains(extension)) {
             throw new IllegalArgumentException("invalid file format");
@@ -121,5 +121,17 @@ public class NotesServiceImpl implements NotesService {
     @Override
     public List<NotesDto> getAllNotes() {
         return notesRepository.findAll().stream().map(note -> modelMapper.map(note, NotesDto.class)).toList();
+    }
+
+    @Override
+    public byte[] downloadFile(FileDetails fileDetails) throws IOException {
+
+        InputStream fileInputStream = new FileInputStream(fileDetails.getPath());
+        return StreamUtils.copyToByteArray(fileInputStream);
+    }
+
+    @Override
+    public FileDetails getFileDetails(Integer id) {
+        return fileRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("file is invalid "));
     }
 }
