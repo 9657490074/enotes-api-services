@@ -1,11 +1,13 @@
 package com.org.enotesapiservice.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.org.enotesapiservice.dto.NotesDto;
+import com.org.enotesapiservice.entity.FileDetails;
 import com.org.enotesapiservice.service.NotesService;
 import com.org.enotesapiservice.util.CommonUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +32,22 @@ public class NotesController {
         }
         return CommonUtil.createErrorResponseMessage("notes save failed", HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @GetMapping("/download/{id}")
+    public ResponseEntity<?> downloadFile(@PathVariable Integer id) throws IOException {
+
+        FileDetails fileDetails = notesService.getFileDetails(id);
+        byte[] data = notesService.downloadFile(fileDetails);
+
+        HttpHeaders headers = new HttpHeaders();
+        String contentType = CommonUtil.getContentType(fileDetails.getOriginalFileName());
+
+        headers.setContentType(MediaType.parseMediaType(contentType));
+        headers.setContentDispositionFormData("attachment", fileDetails.getOriginalFileName());
+
+        return ResponseEntity.ok().headers(headers).body(data);
+    }
+
 
     @GetMapping("/")
     private ResponseEntity<?> getAllNotes() {
