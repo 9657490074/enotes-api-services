@@ -1,6 +1,6 @@
 package com.org.enotesapiservice.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.org.enotesapiservice.dto.FavoriteNotesDTO;
 import com.org.enotesapiservice.dto.NotesDto;
 import com.org.enotesapiservice.dto.NotesResponse;
 import com.org.enotesapiservice.entity.FileDetails;
@@ -20,7 +20,7 @@ public interface NotesService {
 
     FileDetails getFileDetails(Integer id);
 
-    NotesResponse getAllNotesByUser(Integer userId,Integer pageNumber,Integer pageSize);
+    NotesResponse getAllNotesByUser(Integer userId, Integer pageNumber, Integer pageSize);
 
     void softDeleteNotes(Integer id);
 
@@ -31,4 +31,10 @@ public interface NotesService {
     void hardDeleteNotes(Integer id);
 
     void emptyRecycleBin(int userId);
+
+    void favoriteNotes(Integer noteId);
+
+    void unFavoriteNotes(Integer noteId);
+
+    List<FavoriteNotesDTO> getUserFavoriteNotes();
 }
