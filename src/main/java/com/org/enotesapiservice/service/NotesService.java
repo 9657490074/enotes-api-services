@@ -2,6 +2,7 @@ package com.org.enotesapiservice.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.org.enotesapiservice.dto.NotesDto;
+import com.org.enotesapiservice.dto.NotesResponse;
 import com.org.enotesapiservice.entity.FileDetails;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,4 +19,6 @@ public interface NotesService {
     byte[] downloadFile(FileDetails fileDetails) throws IOException;
 
     FileDetails getFileDetails(Integer id);
+
+    NotesResponse getAllNotesByUser(Integer userId,Integer pageNumber,Integer pageSize);
 }
