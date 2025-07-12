@@ -1,10 +1,7 @@
 package com.org.enotesapiservice.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
@@ -15,6 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
+@Builder
 public class Notes extends BaseModel {
 
     @Id
