@@ -26,8 +26,7 @@ public class NotesController {
     private final NotesService notesService;
 
     @PostMapping("/")
-    private ResponseEntity<?> saveNotes(@RequestParam String notes,
-                                        @RequestParam(required = false) MultipartFile file) throws IOException {
+    private ResponseEntity<?> saveNotes(@RequestParam String notes, @RequestParam(required = false) MultipartFile file) throws IOException {
         Boolean saveNotes = notesService.saveNotes(notes, file);
         if (saveNotes) {
             return CommonUtil.createBuildResponseMessage("notes saved success", HttpStatus.CREATED);
@@ -61,10 +60,7 @@ public class NotesController {
     }
 
     @GetMapping("/user-notes")
-    private ResponseEntity<?> getAllNotesByUser(@RequestParam(name = "pageNo", defaultValue = "0")
-                                                Integer pageNumber,
-                                                @RequestParam(name = "pageSize", defaultValue = "10")
-                                                Integer pageSize) {
+    private ResponseEntity<?> getAllNotesByUser(@RequestParam(name = "pageNo", defaultValue = "0") Integer pageNumber, @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
         Integer userId = 1;
         NotesResponse allNotes = notesService.getAllNotesByUser(userId, pageNumber, pageSize);
         return CommonUtil.createBuildResponse(allNotes, HttpStatus.OK);
@@ -124,6 +120,16 @@ public class NotesController {
             return CommonUtil.createBuildResponseMessage("NO-CONTENT", HttpStatus.NO_CONTENT);
         }
         return CommonUtil.createBuildResponse(userFavoriteNotes, HttpStatus.OK);
+    }
+
+    @GetMapping("/copy/{id}")
+    public ResponseEntity<?> copyNotes(@PathVariable Integer id) {
+        Boolean copyNotes = notesService.copyNotes(id);
+        if (copyNotes) {
+            return CommonUtil.createBuildResponseMessage("Copy Success", HttpStatus.CREATED);
+        } else {
+            return CommonUtil.createErrorResponseMessage("Copy Failed! Please try later", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 }

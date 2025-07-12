@@ -37,4 +37,6 @@ public interface NotesService {
     void unFavoriteNotes(Integer noteId);
 
     List<FavoriteNotesDTO> getUserFavoriteNotes();
+
+    Boolean copyNotes(Integer id);
 }

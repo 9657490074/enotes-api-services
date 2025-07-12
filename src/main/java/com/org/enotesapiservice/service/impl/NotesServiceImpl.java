@@ -272,4 +272,22 @@ public class NotesServiceImpl implements NotesService {
         return favouriteNotes.stream()
                 .map(note -> modelMapper.map(note, FavoriteNotesDTO.class)).toList();
     }
+
+    @Override
+    public Boolean copyNotes(Integer id) {
+        Notes notes = notesRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("notes id is invalid: "));
+        Notes copyNotes = Notes.builder()
+                .title(notes.getTitle())
+                .description(notes.getDescription())
+                .category(notes.getCategory())
+                .isDeleted(false)
+                .fileDetails(null)
+                .build();
+        Notes saveCopyNote = notesRepository.save(copyNotes);
+        if (!ObjectUtils.isEmpty(saveCopyNote)) {
+            return true;
+        }
+        return false;
+    }
 }
