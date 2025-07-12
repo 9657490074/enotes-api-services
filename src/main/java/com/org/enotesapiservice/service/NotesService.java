@@ -21,4 +21,14 @@ public interface NotesService {
     FileDetails getFileDetails(Integer id);
 
     NotesResponse getAllNotesByUser(Integer userId,Integer pageNumber,Integer pageSize);
+
+    void softDeleteNotes(Integer id);
+
+    void restoreNotes(Integer id);
+
+    List<NotesDto> getUserRecycleBinNotes(Integer userId);
+
+    void hardDeleteNotes(Integer id);
+
+    void emptyRecycleBin(int userId);
 }
