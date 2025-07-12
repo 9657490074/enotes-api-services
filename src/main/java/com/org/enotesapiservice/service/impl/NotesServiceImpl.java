@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -48,6 +50,8 @@ public class NotesServiceImpl implements NotesService {
 
         ObjectMapper objectMapper = new ObjectMapper();
         NotesDto notesDto = objectMapper.readValue(notes, NotesDto.class);
+        notesDto.setIsDeleted(false);
+        notesDto.setDeletedOn(null);
 
         if (!ObjectUtils.isEmpty(notesDto.getId())) {
             updateNotes(notesDto, file);
@@ -135,13 +139,19 @@ public class NotesServiceImpl implements NotesService {
 
     private void checkCategoryExists(NotesDto.CategoryDto category) {
 
-        categoryRepository.findById(category.getId()).orElseThrow(() -> new ResourceNotFoundException("category is invalid "));
+        categoryRepository
+                .findById(category.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("category is invalid "));
 
     }
 
     @Override
     public List<NotesDto> getAllNotes() {
-        return notesRepository.findAll().stream().map(note -> modelMapper.map(note, NotesDto.class)).toList();
+        return notesRepository
+                .findAll()
+                .stream()
+                .map(note -> modelMapper.map(note, NotesDto.class))
+                .toList();
     }
 
     @Override
@@ -153,25 +163,80 @@ public class NotesServiceImpl implements NotesService {
 
     @Override
     public FileDetails getFileDetails(Integer id) {
-        return fileRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("file is invalid "));
+        return fileRepository
+                .findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("file is invalid "));
     }
 
     @Override
     public NotesResponse getAllNotesByUser(Integer userId, Integer pageNumber, Integer pageSize) {
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Page<Notes> pageNotes = notesRepository.findByCreatedBy(userId, pageable);
+        Page<Notes> pageNotes = notesRepository.findByCreatedByAndIsDeletedFalse(userId, pageable);
 
-        List<NotesDto> notesDto = pageNotes.get().map(n -> modelMapper.map(n, NotesDto.class)).toList();
-        NotesResponse notes = NotesResponse.builder()
+        List<NotesDto> notesDto = pageNotes.get()
+                .map(n -> modelMapper.map(n, NotesDto.class))
+                .toList();
+
+        return NotesResponse
+                .builder()
                 .notes(notesDto)
                 .pageNo(pageNotes.getNumber())
-                .pageSize(pageNotes.getSize())
-                .totalElements(pageNotes.getTotalElements())
+                .pageSize(pageNotes.getSize()).totalElements(pageNotes.getTotalElements())
                 .totalPages(pageNotes.getTotalPages())
                 .isFirst(pageNotes.isFirst())
                 .isLast(pageNotes.isLast())
                 .build();
-        return notes;
+//        NotesResponse notes = NotesResponse.builder().notes(notesDto).pageNo(pageNotes.getNumber()).pageSize(pageNotes.getSize()).totalElements(pageNotes.getTotalElements()).totalPages(pageNotes.getTotalPages()).isFirst(pageNotes.isFirst()).isLast(pageNotes.isLast()).build();
+//        return notes;
+    }
+
+    @Override
+    public void softDeleteNotes(Integer id) {
+        Notes notes = notesRepository
+                .findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("notes id is invalid: "));
+        notes.setIsDeleted(true);
+        notes.setDeletedOn(LocalDateTime.now());
+        notesRepository.save(notes);
+    }
+
+    @Override
+    public void restoreNotes(Integer id) {
+        Notes notes = notesRepository
+                .findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("notes id is invalid: "));
+        notes.setIsDeleted(false);
+        notes.setDeletedOn(null);
+        notesRepository.save(notes);
+    }
+
+    @Override
+    public List<NotesDto> getUserRecycleBinNotes(Integer userId) {
+        List<Notes> recycleNotes = notesRepository.findByCreatedByAndIsDeletedTrue(userId);
+        return recycleNotes
+                .stream()
+                .map(note -> modelMapper.map(note, NotesDto.class))
+                .toList();
+    }
+
+    @Override
+    public void hardDeleteNotes(Integer id) {
+        Notes notes = notesRepository
+                .findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("notes id is invalid: "));
+        if (notes.getIsDeleted()) {
+            notesRepository.delete(notes);
+        } else {
+            throw new IllegalArgumentException("Something went wrong! You can't delete");
+        }
+    }
+
+    @Override
+    public void emptyRecycleBin(int userId) {
+        List<Notes> recycleNotes = notesRepository.findByCreatedByAndIsDeletedTrue(userId);
+        if (!CollectionUtils.isEmpty(recycleNotes)) {
+            notesRepository.deleteAll(recycleNotes);
+        }
     }
 }

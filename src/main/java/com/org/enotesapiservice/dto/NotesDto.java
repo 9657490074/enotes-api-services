@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -28,6 +29,10 @@ public class NotesDto {
     private Date updatedOn;
 
     private FilesDto fileDetails;
+
+    private Boolean isDeleted;
+
+    private LocalDateTime deletedOn;
 
     @Data
     @AllArgsConstructor
