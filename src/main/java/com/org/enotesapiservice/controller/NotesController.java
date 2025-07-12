@@ -1,6 +1,7 @@
 package com.org.enotesapiservice.controller;
 
 import com.org.enotesapiservice.dto.NotesDto;
+import com.org.enotesapiservice.dto.NotesResponse;
 import com.org.enotesapiservice.entity.FileDetails;
 import com.org.enotesapiservice.service.NotesService;
 import com.org.enotesapiservice.util.CommonUtil;
@@ -55,6 +56,16 @@ public class NotesController {
         if (CollectionUtils.isEmpty(allNotes)) {
             return CommonUtil.createErrorResponseMessage("NO-CONTENT", HttpStatus.NO_CONTENT);
         }
+        return CommonUtil.createBuildResponse(allNotes, HttpStatus.OK);
+    }
+
+    @GetMapping("/user-notes")
+    private ResponseEntity<?> getAllNotesByUser(@RequestParam(name = "pageNo", defaultValue = "0")
+                                                Integer pageNumber,
+                                                @RequestParam(name = "pageSize", defaultValue = "10")
+                                                Integer pageSize) {
+        Integer userId = 1;
+        NotesResponse allNotes = notesService.getAllNotesByUser(userId, pageNumber, pageSize);
         return CommonUtil.createBuildResponse(allNotes, HttpStatus.OK);
     }
 
