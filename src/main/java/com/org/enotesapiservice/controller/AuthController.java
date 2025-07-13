@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/user")
+@RequestMapping("/api/v1/auth")
 public class AuthController {
 
     private final UserService userService;
 
     @PostMapping("/")
-    public ResponseEntity<?> registerUser(@RequestBody UserDto userDto) {
+    public ResponseEntity<?> registerUser(@RequestBody UserDto userDto) throws Exception {
         Boolean registerUser = userService.registerUser(userDto);
         if (registerUser) {
             return CommonUtil.createBuildResponseMessage("user created successfully! Please login:", HttpStatus.CREATED);
