@@ -2,17 +2,30 @@ package com.org.enotesapiservice.util;
 
 import com.org.enotesapiservice.dto.CategoryDto;
 import com.org.enotesapiservice.dto.TodoDto;
+import com.org.enotesapiservice.dto.UserDto;
+import com.org.enotesapiservice.entity.Role;
 import com.org.enotesapiservice.enums.ToDoStatus;
+import com.org.enotesapiservice.exception.ExistDataException;
 import com.org.enotesapiservice.exception.ResourceNotFoundException;
 import com.org.enotesapiservice.exception.ValidationException;
+import com.org.enotesapiservice.repository.RoleRepository;
+import com.org.enotesapiservice.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
+@RequiredArgsConstructor
 public class Validation {
+
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
 
     public void categoryValidation(CategoryDto categoryDto) {
 
@@ -69,4 +82,53 @@ public class Validation {
             throw new ResourceNotFoundException("invalid status");
         }
     }
+
+    public void userValidation(UserDto userDto) {
+
+        if (!StringUtils.hasText(userDto.getFirstName())) {
+            throw new IllegalArgumentException("first name is invalid");
+        }
+
+        if (!StringUtils.hasText(userDto.getLastName())) {
+            throw new IllegalArgumentException("last name is invalid");
+        }
+
+        if (!StringUtils.hasText(userDto.getEmail()) || !userDto.getEmail().matches(Constant.EMAIL_REGEX)) {
+            throw new IllegalArgumentException("email is invalid");
+        } else {
+            // validate email exist
+            Boolean existEmail = userRepository.existsByEmail(userDto.getEmail());
+            if (existEmail) {
+                throw new ExistDataException("Email already exist");
+            }
+        }
+
+        if (!StringUtils.hasText(userDto.getMobileNo()) || !userDto.getMobileNo().matches(Constant.MOBILE_NO_REGEX)) {
+            throw new IllegalArgumentException("mobile number is invalid");
+        }
+
+        if (CollectionUtils.isEmpty(userDto.getRoles())) {
+            throw new IllegalArgumentException("role is invalid");
+        } else {
+
+            //List<Integer> roleIds = roleRepository.findAll().stream().map(r -> r.getId()).toList();
+            List<Integer> roleIds = roleRepository.findAll()
+                    .stream()
+                    .map(Role::getId)
+                    .toList();
+
+            List<Integer> invalidReqRoleIds = userDto
+                    .getRoles()
+                    .stream()
+                    .map(UserDto.RoleDTO::getId)
+                    .filter(roleId -> !roleIds.contains(roleId))
+                    .toList();
+
+            if (!CollectionUtils.isEmpty(invalidReqRoleIds)) {
+                throw new IllegalArgumentException("role is invalid" + invalidReqRoleIds);
+            }
+        }
+
+    }
+
 }
