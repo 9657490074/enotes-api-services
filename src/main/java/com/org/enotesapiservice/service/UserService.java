@@ -4,5 +4,5 @@ import com.org.enotesapiservice.dto.UserDto;
 
 public interface UserService {
 
-    Boolean registerUser(UserDto userDto);
+    Boolean registerUser(UserDto userDto) throws Exception;
 }
