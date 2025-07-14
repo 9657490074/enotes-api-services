@@ -10,6 +10,7 @@ import com.org.enotesapiservice.exception.ResourceNotFoundException;
 import com.org.enotesapiservice.exception.ValidationException;
 import com.org.enotesapiservice.repository.RoleRepository;
 import com.org.enotesapiservice.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -130,5 +131,4 @@ public class Validation {
         }
 
     }
-
 }
