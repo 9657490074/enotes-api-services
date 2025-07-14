@@ -27,7 +27,7 @@ public class User {
 
     private String mobileNo;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.EAGER)
     private List<Role> roles;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpServerErrorException;
@@ -65,6 +66,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleSuccessException(SuccessException e) {
         log.error("SuccessException : handleSuccessException : {}", e.getMessage());
         return CommonUtil.createBuildResponseMessage(e.getMessage(), HttpStatus.OK);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<?> handleBadCredentialsException(BadCredentialsException e) {
+        log.error("BadCredentialsException : handleBadCredentialsException : {}", e.getMessage());
+        return CommonUtil.createErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
 }
