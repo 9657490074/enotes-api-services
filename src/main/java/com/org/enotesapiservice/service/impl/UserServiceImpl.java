@@ -10,6 +10,7 @@ import com.org.enotesapiservice.entity.Role;
 import com.org.enotesapiservice.entity.User;
 import com.org.enotesapiservice.repository.RoleRepository;
 import com.org.enotesapiservice.repository.UserRepository;
+import com.org.enotesapiservice.service.JwtService;
 import com.org.enotesapiservice.service.UserService;
 import com.org.enotesapiservice.util.Validation;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,7 @@ public class UserServiceImpl implements UserService {
     private final EmailSendService emailSendService;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     @Override
     public Boolean registerUser(UserDto userDto, String url) throws Exception {
@@ -61,7 +63,7 @@ public class UserServiceImpl implements UserService {
                 (new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
         if (authenticate.isAuthenticated()) {
             CustomUserDetails customUserDetails = (CustomUserDetails) authenticate.getPrincipal();
-            String token = "jahuisdajdbubidbahvugugubasafafw";
+            String token = jwtService.generateToken(customUserDetails.getUser());
             return LoginResponse.builder()
                     .user(modelMapper.map(customUserDetails.getUser(), UserDto.class))
                     .token(token)
