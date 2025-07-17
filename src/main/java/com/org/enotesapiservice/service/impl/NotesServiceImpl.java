@@ -13,6 +13,7 @@ import com.org.enotesapiservice.repository.FavouriteNoteRepository;
 import com.org.enotesapiservice.repository.FileRepository;
 import com.org.enotesapiservice.repository.NotesRepository;
 import com.org.enotesapiservice.service.NotesService;
+import com.org.enotesapiservice.util.CommonUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
@@ -173,8 +174,8 @@ public class NotesServiceImpl implements NotesService {
     }
 
     @Override
-    public NotesResponse getAllNotesByUser(Integer userId, Integer pageNumber, Integer pageSize) {
-
+    public NotesResponse getAllNotesByUser(Integer pageNumber, Integer pageSize) {
+        Integer userId = CommonUtil.getLoggedInUser().getId();
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Page<Notes> pageNotes = notesRepository.findByCreatedByAndIsDeletedFalse(userId, pageable);
 
@@ -216,7 +217,8 @@ public class NotesServiceImpl implements NotesService {
     }
 
     @Override
-    public List<NotesDto> getUserRecycleBinNotes(Integer userId) {
+    public List<NotesDto> getUserRecycleBinNotes() {
+        Integer userId = CommonUtil.getLoggedInUser().getId();
         List<Notes> recycleNotes = notesRepository.findByCreatedByAndIsDeletedTrue(userId);
         return recycleNotes
                 .stream()
@@ -237,7 +239,8 @@ public class NotesServiceImpl implements NotesService {
     }
 
     @Override
-    public void emptyRecycleBin(int userId) {
+    public void emptyRecycleBin() {
+        Integer userId = CommonUtil.getLoggedInUser().getId();
         List<Notes> recycleNotes = notesRepository.findByCreatedByAndIsDeletedTrue(userId);
         if (!CollectionUtils.isEmpty(recycleNotes)) {
             notesRepository.deleteAll(recycleNotes);
@@ -246,7 +249,7 @@ public class NotesServiceImpl implements NotesService {
 
     @Override
     public void favoriteNotes(Integer noteId) {
-        int userId = 1;
+        Integer userId = CommonUtil.getLoggedInUser().getId();
         Notes notes = notesRepository.findById(noteId)
                 .orElseThrow(() -> new ResourceNotFoundException("note id is invalid"));
         FavouriteNote favouriteNote = FavouriteNote.builder()
@@ -258,7 +261,7 @@ public class NotesServiceImpl implements NotesService {
 
     @Override
     public void unFavoriteNotes(Integer favouriteNoteId) {
-        int userId = 1;
+        Integer userId = CommonUtil.getLoggedInUser().getId();
         FavouriteNote favNote = favouriteNoteRepository.findById(favouriteNoteId)
                 .orElseThrow(() -> new ResourceNotFoundException("note id is invalid"));
         favouriteNoteRepository.delete(favNote);
@@ -267,7 +270,7 @@ public class NotesServiceImpl implements NotesService {
 
     @Override
     public List<FavoriteNotesDTO> getUserFavoriteNotes() {
-        int userId = 1;
+        Integer userId = CommonUtil.getLoggedInUser().getId();
         List<FavouriteNote> favouriteNotes = favouriteNoteRepository.findByUserId(userId);
         return favouriteNotes.stream()
                 .map(note -> modelMapper.map(note, FavoriteNotesDTO.class)).toList();

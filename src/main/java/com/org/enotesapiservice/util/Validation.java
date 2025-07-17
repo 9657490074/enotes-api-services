@@ -2,7 +2,7 @@ package com.org.enotesapiservice.util;
 
 import com.org.enotesapiservice.dto.CategoryDto;
 import com.org.enotesapiservice.dto.TodoDto;
-import com.org.enotesapiservice.dto.UserDto;
+import com.org.enotesapiservice.dto.UserRequest;
 import com.org.enotesapiservice.entity.Role;
 import com.org.enotesapiservice.enums.ToDoStatus;
 import com.org.enotesapiservice.exception.ExistDataException;
@@ -10,7 +10,6 @@ import com.org.enotesapiservice.exception.ResourceNotFoundException;
 import com.org.enotesapiservice.exception.ValidationException;
 import com.org.enotesapiservice.repository.RoleRepository;
 import com.org.enotesapiservice.repository.UserRepository;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -84,7 +83,7 @@ public class Validation {
         }
     }
 
-    public void userValidation(UserDto userDto) {
+    public void userValidation(UserRequest userDto) {
 
         if (!StringUtils.hasText(userDto.getFirstName())) {
             throw new IllegalArgumentException("first name is invalid");
@@ -121,7 +120,7 @@ public class Validation {
             List<Integer> invalidReqRoleIds = userDto
                     .getRoles()
                     .stream()
-                    .map(UserDto.RoleDTO::getId)
+                    .map(UserRequest.RoleDTO::getId)
                     .filter(roleId -> !roleIds.contains(roleId))
                     .toList();
 

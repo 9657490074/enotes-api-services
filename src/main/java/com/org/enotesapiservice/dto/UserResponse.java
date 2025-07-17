@@ -5,12 +5,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDto {
-
+public class UserResponse {
     private Integer id;
 
     private String firstName;
@@ -19,11 +17,11 @@ public class UserDto {
 
     private String email;
 
-    private String password;
-
     private String mobileNo;
 
-    private List<RoleDTO> roles;
+    private StatusDto status;
+
+    private List<UserRequest.RoleDTO> roles;
 
     @Data
     @AllArgsConstructor
@@ -31,6 +29,14 @@ public class UserDto {
     public static class RoleDTO {
         private Integer id;
         private String name;
+    }
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class StatusDto {
+        private Integer id;
+        private Boolean isActive;
     }
 
 }

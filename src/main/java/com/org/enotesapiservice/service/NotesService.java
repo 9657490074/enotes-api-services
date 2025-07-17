@@ -20,17 +20,17 @@ public interface NotesService {
 
     FileDetails getFileDetails(Integer id);
 
-    NotesResponse getAllNotesByUser(Integer userId, Integer pageNumber, Integer pageSize);
+    NotesResponse getAllNotesByUser(Integer pageNumber, Integer pageSize);
 
     void softDeleteNotes(Integer id);
 
     void restoreNotes(Integer id);
 
-    List<NotesDto> getUserRecycleBinNotes(Integer userId);
+    List<NotesDto> getUserRecycleBinNotes();
 
     void hardDeleteNotes(Integer id);
 
-    void emptyRecycleBin(int userId);
+    void emptyRecycleBin();
 
     void favoriteNotes(Integer noteId);
 

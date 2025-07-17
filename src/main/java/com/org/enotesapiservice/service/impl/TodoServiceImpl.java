@@ -6,6 +6,7 @@ import com.org.enotesapiservice.enums.ToDoStatus;
 import com.org.enotesapiservice.exception.ResourceNotFoundException;
 import com.org.enotesapiservice.repository.TodoRepository;
 import com.org.enotesapiservice.service.TodoService;
+import com.org.enotesapiservice.util.CommonUtil;
 import com.org.enotesapiservice.util.Validation;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -58,7 +59,8 @@ public class TodoServiceImpl implements TodoService {
 
     @Override
     public List<TodoDto> getToDoByUser() {
-        Integer userId = 1;
+        //Integer userId = 1;
+        Integer userId = CommonUtil.getLoggedInUser().getId();
         List<Todo> todoList = todoRepository.findByCreatedBy(userId);
         return todoList.stream()
                 .map(todo -> modelMapper.map(todo, TodoDto.class)).
