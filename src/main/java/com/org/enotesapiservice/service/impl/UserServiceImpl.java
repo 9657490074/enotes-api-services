@@ -4,7 +4,7 @@ import com.org.enotesapiservice.config.security.CustomUserDetails;
 import com.org.enotesapiservice.dto.EmailRequest;
 import com.org.enotesapiservice.dto.LoginRequest;
 import com.org.enotesapiservice.dto.LoginResponse;
-import com.org.enotesapiservice.dto.UserDto;
+import com.org.enotesapiservice.dto.UserRequest;
 import com.org.enotesapiservice.entity.AccountStatus;
 import com.org.enotesapiservice.entity.Role;
 import com.org.enotesapiservice.entity.User;
@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService {
     private final JwtService jwtService;
 
     @Override
-    public Boolean registerUser(UserDto userDto, String url) throws Exception {
+    public Boolean registerUser(UserRequest userDto, String url) throws Exception {
         validation.userValidation(userDto);
         User user = modelMapper.map(userDto, User.class);
         setRole(userDto, user);
@@ -65,7 +65,7 @@ public class UserServiceImpl implements UserService {
             CustomUserDetails customUserDetails = (CustomUserDetails) authenticate.getPrincipal();
             String token = jwtService.generateToken(customUserDetails.getUser());
             return LoginResponse.builder()
-                    .user(modelMapper.map(customUserDetails.getUser(), UserDto.class))
+                    .user(modelMapper.map(customUserDetails.getUser(), UserRequest.class))
                     .token(token)
                     .build();
         }
@@ -86,12 +86,12 @@ public class UserServiceImpl implements UserService {
         emailSendService.send(emailRequest);
     }
 
-    private void setRole(UserDto userDto, User user) {
+    private void setRole(UserRequest userDto, User user) {
         //List<Integer> requestRole = userDto.getRoles().stream().map(UserDto.RoleDTO::getId).toList();
         List<Integer> requestRole = userDto
                 .getRoles()
                 .stream()
-                .map(UserDto.RoleDTO::getId)
+                .map(UserRequest.RoleDTO::getId)
                 .toList();
         List<Role> roles = roleRepository.findAllById(requestRole);
         user.setRoles(roles);
