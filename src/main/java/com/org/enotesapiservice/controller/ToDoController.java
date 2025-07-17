@@ -6,6 +6,7 @@ import com.org.enotesapiservice.util.CommonUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +20,7 @@ public class ToDoController {
     private final TodoService todoService;
 
     @PostMapping("/")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> saveToDo(@RequestBody TodoDto todoDto) throws Exception {
         Boolean saveToDo = todoService.saveToDo(todoDto);
         if (saveToDo) {
@@ -31,12 +33,14 @@ public class ToDoController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> getToDoById(@PathVariable Integer id) {
         TodoDto todoById = todoService.getTodoById(id);
         return CommonUtil.createBuildResponse(todoById, HttpStatus.OK);
     }
 
     @GetMapping("/list")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> getAllToDoByUser() {
         List<TodoDto> toDoByUser = todoService.getToDoByUser();
         if (CollectionUtils.isEmpty(toDoByUser)) {

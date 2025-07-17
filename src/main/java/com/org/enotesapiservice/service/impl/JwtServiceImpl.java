@@ -1,8 +1,11 @@
 package com.org.enotesapiservice.service.impl;
 
 import com.org.enotesapiservice.entity.User;
+import com.org.enotesapiservice.exception.JwtTokenExpiredException;
 import com.org.enotesapiservice.service.JwtService;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -43,7 +46,7 @@ public class JwtServiceImpl implements JwtService {
                 .claims().add(claims)
                 .subject(user.getEmail())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 60 * 60 * 60 * 10))
+                .expiration(new Date(System.currentTimeMillis() + 60 * 60 * 10))
                 .and()
                 .signWith(getKey())
                 .compact();
@@ -61,11 +64,19 @@ public class JwtServiceImpl implements JwtService {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parser()
-                .verifyWith(decryptKey(SECRET_KEY))
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+        try {
+            return Jwts.parser()
+                    .verifyWith(decryptKey(SECRET_KEY))
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (ExpiredJwtException e) {
+            throw new JwtTokenExpiredException("token is expired");
+        } catch (JwtException e) {
+            throw new JwtTokenExpiredException("invalid Jwt token");
+        } catch (Exception e) {
+            throw e;
+        }
     }
 
     private SecretKey decryptKey(String secretKey) {
