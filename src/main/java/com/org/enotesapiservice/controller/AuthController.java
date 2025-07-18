@@ -3,7 +3,7 @@ package com.org.enotesapiservice.controller;
 import com.org.enotesapiservice.dto.LoginRequest;
 import com.org.enotesapiservice.dto.LoginResponse;
 import com.org.enotesapiservice.dto.UserRequest;
-import com.org.enotesapiservice.service.UserService;
+import com.org.enotesapiservice.service.AuthService;
 import com.org.enotesapiservice.util.CommonUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/auth")
 public class AuthController {
 
-    private final UserService userService;
+    private final AuthService userService;
 
     @PostMapping("/")
     public ResponseEntity<?> registerUser(@RequestBody UserRequest userDto, HttpServletRequest request) throws Exception {
