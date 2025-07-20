@@ -7,6 +7,8 @@ import com.org.enotesapiservice.service.UserService;
 import com.org.enotesapiservice.util.CommonUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/home")
 public class HomeController {
+    Logger log = LoggerFactory.getLogger(HomeController.class);
 
     private final HomeService homeService;
     private final UserService userService;
@@ -22,10 +25,12 @@ public class HomeController {
     @GetMapping("/verify")
     public ResponseEntity<?> verifyUserAccount(@RequestParam Integer uid,
                                                @RequestParam String code) throws SuccessException {
+        log.info("HomeController : verifyUserAccount() : Execution Start");
         Boolean verifyUser = homeService.verifyUserAccount(uid, code);
         if (verifyUser) {
             return CommonUtil.createBuildResponseMessage("User account verified", HttpStatus.OK);
         } else {
+            log.info("HomeController : verifyUserAccount() : Execution End");
             return CommonUtil.createBuildResponseMessage("User account not verified", HttpStatus.BAD_REQUEST);
         }
     }
@@ -40,13 +45,13 @@ public class HomeController {
     @GetMapping("/verify-password-link")
     public ResponseEntity<?> verifyPasswordResetLink(@RequestParam Integer uid,
                                                      @RequestParam String code) {
-        userService.verifyPasswordResetLink(uid,code);
-        return CommonUtil.createBuildResponseMessage("verified success",HttpStatus.OK);
+        userService.verifyPasswordResetLink(uid, code);
+        return CommonUtil.createBuildResponseMessage("verified success", HttpStatus.OK);
     }
 
     @PostMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@RequestBody PasswordResetRequest passwordResetRequest) {
         userService.resetPassword(passwordResetRequest);
-        return CommonUtil.createBuildResponseMessage("password-reset-successfully",HttpStatus.OK);
+        return CommonUtil.createBuildResponseMessage("password-reset-successfully", HttpStatus.OK);
     }
 }

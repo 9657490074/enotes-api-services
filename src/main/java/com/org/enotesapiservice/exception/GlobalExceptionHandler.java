@@ -19,46 +19,55 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<?> handleNullPointerException(NullPointerException e) {
+        log.error("NullPointerException : handleNullPointerException : {}", e.getMessage());
         return CommonUtil.createErrorResponseMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<?> handleResourceNotFoundException(ResourceNotFoundException e) {
+        log.error("ResourceNotFoundException : handleResourceNotFoundException : {}", e.getMessage());
         return CommonUtil.createErrorResponseMessage(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(HttpServerErrorException.InternalServerError.class)
     public ResponseEntity<?> handleInternalServerErrorException(HttpServerErrorException.InternalServerError e) {
+        log.error("InternalServerError : handleInternalServerErrorException : {}", e.getMessage());
         return CommonUtil.createErrorResponseMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleException(Exception e) {
+        log.error("Exception : handleException : {}", e.getMessage());
         return CommonUtil.createErrorResponseMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException e) {
+        log.error("AccessDeniedException : handleAccessDeniedException : {}", e.getMessage());
         return CommonUtil.createErrorResponseMessage(e.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<?> handleValidationException(ValidationException e) {
+        log.error("ValidationException : handleValidationException : {}", e.getMessage());
         return CommonUtil.createErrorResponse(e.getErrors(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ExistDataException.class)
     public ResponseEntity<?> handleExistDataException(ExistDataException e) {
+        log.error("ExistDataException : handleExistDataException : {}", e.getMessage());
         return CommonUtil.createErrorResponseMessage(e.getMessage(), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<?> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        log.error("HttpMessageNotReadableException : handleHttpMessageNotReadableException : {}", e.getMessage());
         return CommonUtil.createErrorResponseMessage(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(FileNotFoundException.class)
     public ResponseEntity<?> handleFileNotFoundException(FileNotFoundException e) {
+        log.error("FileNotFoundException : handleFileNotFoundException : {}", e.getMessage());
         return CommonUtil.createErrorResponse(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
