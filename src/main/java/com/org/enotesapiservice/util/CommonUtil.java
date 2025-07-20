@@ -1,7 +1,6 @@
 package com.org.enotesapiservice.util;
 
 import com.org.enotesapiservice.config.security.CustomUserDetails;
-import com.org.enotesapiservice.dto.UserResponse;
 import com.org.enotesapiservice.entity.User;
 import com.org.enotesapiservice.handler.GenericResponse;
 import jakarta.servlet.http.HttpServletRequest;

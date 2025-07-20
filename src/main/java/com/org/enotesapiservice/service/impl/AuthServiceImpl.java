@@ -11,6 +11,7 @@ import com.org.enotesapiservice.service.JwtService;
 import com.org.enotesapiservice.service.AuthService;
 import com.org.enotesapiservice.util.Validation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,6 +25,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
@@ -37,6 +39,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public Boolean registerUser(UserRequest userDto, String url) throws Exception {
+        log.info("AuthServiceImpl : register() : Execution Start");
         validation.userValidation(userDto);
         User user = modelMapper.map(userDto, User.class);
         setRole(userDto, user);
@@ -47,17 +50,22 @@ public class AuthServiceImpl implements AuthService {
         user.setStatus(status);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         User savedUser = userRepository.save(user);
-        if (!ObjectUtils.isEmpty(savedUser)) {
-            emailSendForRegister(savedUser, url);
-            return true;
+        if (ObjectUtils.isEmpty(savedUser)) {
+            log.info("Error : {}", "user not saved");
+            return false;
         }
-        return false;
+        log.info("Message : {}", "User Register success");
+        emailSendForRegister(savedUser, url);
+        log.info("Message : {}", "email send success");
+        log.info("AuthServiceImpl : register() : Execution End");
+        return true;
     }
 
     @Override
     public LoginResponse login(LoginRequest loginRequest) {
         Authentication authenticate = authenticationManager.authenticate
-                (new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+                (new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),
+                        loginRequest.getPassword()));
         if (authenticate.isAuthenticated()) {
             CustomUserDetails customUserDetails = (CustomUserDetails) authenticate.getPrincipal();
             String token = jwtService.generateToken(customUserDetails.getUser());
