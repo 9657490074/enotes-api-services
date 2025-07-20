@@ -48,7 +48,7 @@ public class AuthServiceImpl implements AuthService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         User savedUser = userRepository.save(user);
         if (!ObjectUtils.isEmpty(savedUser)) {
-            emailSend(savedUser, url);
+            emailSendForRegister(savedUser, url);
             return true;
         }
         return false;
@@ -69,7 +69,7 @@ public class AuthServiceImpl implements AuthService {
         return null;
     }
 
-    private void emailSend(User savedUser, String url) throws Exception {
+    private void emailSendForRegister(User savedUser, String url) throws Exception {
         String message = "Hi,<b>[[username]]</b> " + "<br> Your account register sucessfully.<br>"
                 + "<br> Click the below link verify & Active your account <br>"
                 + "<a href='[[url]]'>Click Here</a> <br><br>" + "Thanks,<br>Enotes.com";
